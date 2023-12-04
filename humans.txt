@@ -3,13 +3,19 @@
 
 # TEAM
 
-    <name> -- <role> -- <twitter>
+    Buzz Kleine -- Backend Cowpoke
+    Zach Wilsterman -- Data Wrangler
+    Sarah McGowan -- UX Sheriff
+    Connor Hostler -- UX Deputy
 
 # THANKS
 
-    <name>
+    Holberton School Tulsa
+    Tulsa Air and Space Museum
 
 # TECHNOLOGY COLOPHON
 
     CSS3, HTML5
     Apache Server Configs, jQuery, Modernizr, Normalize.css
+    Firebase
+    Node.js
