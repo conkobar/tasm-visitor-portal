@@ -161,6 +161,21 @@ class DataHandler:
 
         return zips
 
+    def visitor_demographics(self) -> pd.DataFrame:
+        """
+        Creates a dataframe of visitors by age
+
+        Parameters
+        ----------
+        None
+
+        Returns
+        -------
+        pd.DataFrame
+            Breakdown of visitors by category
+        """
+        return self.dff[['adults', 'children', 'infants', 'seniors']].sum()
+
     def daily_total_visitor_count(self, window=None) -> pd.DataFrame:
         """
         Creates table of total visitor count by day

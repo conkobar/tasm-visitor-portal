@@ -14,7 +14,7 @@ app = Dash(__name__)
 
 app.layout = html.Div(
     [
-        html.H1(children='TASM Visitors'),
+        html.H1(children='TASM Data Dashboard'),
 
         dcc.DatePickerRange(
             id='my-date-picker-range',
@@ -32,11 +32,43 @@ app.layout = html.Div(
 
         html.Div(id='output-container-date-picker-range'),
 
-        dcc.Graph(
-            id='visitor_line_chart',
-            style={'height': '700px',
-                   'width': '1000px',
-                   'align-self': 'center'}
+        html.Div(
+            [
+                html.Div(
+                    [
+                        html.H2(
+                            id='visitor_count'
+                            ),
+
+                        dcc.Graph(
+                            id='visitor_line_chart'
+                            ),
+                        ],
+                    style={
+                        'display': 'flex',
+                        'flex-direction': 'column',
+                        'align-items': 'flex-start'
+                        }
+                    ),
+                html.Div(
+                    [
+                        dcc.Graph(
+                            id='visitor_bar_chart'
+                            ),
+                        ],
+                    style={
+                        'display': 'flex',
+                        'flex-direction': 'column',
+                        'justify-content': 'flex-end',
+                        'height': '100%'
+                        }
+                    )
+                ],
+            style={
+                'display': 'flex',
+                'flex-direction':'row',
+                'width': '100%'
+                }
             )
     ],
 
@@ -49,9 +81,16 @@ app.layout = html.Div(
 
 @callback(
     Output('output-container-date-picker-range', 'children'),
+    Output('visitor_count', 'children'),
     Input('my-date-picker-range', 'start_date'),
     Input('my-date-picker-range', 'end_date'))
 def update_output(start_date, end_date):
+    data.start_date = start_date
+    data.end_date = end_date
+    data.filter_data()
+
+    visitor_count_string = f'{data.total_visitors} total visitors in selected date range'
+
     string_prefix = 'You have selected: '
     if start_date is not None:
         start_date_object = date.fromisoformat(start_date)
@@ -62,9 +101,9 @@ def update_output(start_date, end_date):
         end_date_string = end_date_object.strftime('%B %d, %Y')
         string_prefix = string_prefix + 'End Date: ' + end_date_string
     if len(string_prefix) == len('You have selected: '):
-        return 'Select a date to see it displayed here'
+        return 'Select a date to see it displayed here', visitor_count_string
     else:
-        return string_prefix
+        return string_prefix, visitor_count_string
 
 @callback(
     Output('my-date-picker-range', 'start_date'),
@@ -80,7 +119,7 @@ def reset_dates(n_clicks):
     Input("my-date-picker-range", "start_date"),
     Input('my-date-picker-range', 'end_date')
 )
-def update_visitor_chart(start_date, end_date):
+def update_visitor_line_chart(start_date, end_date):
     # set start and end dates
     data.start_date = start_date
     data.end_date = end_date
@@ -101,7 +140,26 @@ def update_visitor_chart(start_date, end_date):
 
     return fig
 
+@callback(
+    Output("visitor_bar_chart", "figure"),
+    Input("my-date-picker-range", "start_date"),
+    Input('my-date-picker-range', 'end_date')
+)
+def update_visitor_bar_chart(start_date, end_date):
+    # set start and end dates
+    data.start_date = start_date
+    data.end_date = end_date
+    data.filter_data()
 
+    # create plot
+    df = data.visitor_demographics()
+    fig = px.bar(
+        df,
+        labels={'value': 'Num. Visitors', 'index': 'Category'},
+        color=df.index
+        )
+
+    return fig
 
 if __name__ == '__main__':
     app.run(debug=True)
