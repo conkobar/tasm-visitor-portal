@@ -29,8 +29,21 @@ app.layout = html.Div(
             n_clicks=0,
             style={'width':'100px'}
             ),
-
+        
         html.Div(id='output-container-date-picker-range'),
+
+        html.Div(
+            [
+                html.Div('Download data in selected range:', style={'margin-right': '10px'}),
+                html.Button("Download CSV", id="btn_csv", style={'margin-right': '10px'}),
+                dcc.Download(id="download-dataframe-csv"),
+            ],
+            style={
+                'display': 'flex',
+                'flex-direction': 'row',
+                'justify-content': 'flex-end'
+                }
+        ),
 
         html.Div(
             [
@@ -79,6 +92,7 @@ app.layout = html.Div(
     }
 )
 
+
 @callback(
     Output('output-container-date-picker-range', 'children'),
     Output('visitor_count', 'children'),
@@ -105,6 +119,7 @@ def update_output(start_date, end_date):
     else:
         return string_prefix, visitor_count_string
 
+
 @callback(
     Output('my-date-picker-range', 'start_date'),
     Output('my-date-picker-range', 'end_date'),
@@ -113,6 +128,7 @@ def update_output(start_date, end_date):
 def reset_dates(n_clicks):
     data.reset()
     return data.start_date, data.end_date
+
 
 @callback(
     Output("visitor_line_chart", "figure"),
@@ -140,6 +156,7 @@ def update_visitor_line_chart(start_date, end_date):
 
     return fig
 
+
 @callback(
     Output("visitor_bar_chart", "figure"),
     Input("my-date-picker-range", "start_date"),
@@ -160,6 +177,17 @@ def update_visitor_bar_chart(start_date, end_date):
         )
 
     return fig
+
+
+@callback(
+    Output("download-dataframe-csv", "data"),
+    Input("btn_csv", "n_clicks"),
+    prevent_initial_call=True,
+)
+def func(n_clicks):
+    df = data.dff
+    return dcc.send_data_frame(df.to_csv, "tasm_visitor_data(" + data.start_date + '_to_' + data.end_date + ").csv")
+
 
 if __name__ == '__main__':
     app.run(debug=True)
