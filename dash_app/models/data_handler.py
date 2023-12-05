@@ -1,9 +1,12 @@
 #!/usr/bin/env python3
 """Contains class for processing visitor data"""
+from datetime import date
 import pandas as pd
 
 
 class DataHandler:
+    # get zip code data (so we don't have to rebuild the df every time we call zip_code_count())
+    uszips = pd.read_csv('dash_app/data/uszips.csv')
 
     def __init__(self, path, start_date=None, end_date=None) -> None:
         """
@@ -41,8 +44,8 @@ class DataHandler:
         # Create date-filtered dataframe
         self.dff = self.filter_data()
 
-        # get zip code data (so we don't have to rebuild this df every time we call zip_code_count())
-        self.uszips = pd.read_csv('data/uszips.csv')
+        # Get stats from dff
+        self._total_visitors = self.total_visitors
 
     # Start date getter
     @property
@@ -69,6 +72,14 @@ class DataHandler:
             self._end_date = self.df['date'].max()
         else:
             self._end_date = value
+
+    @property
+    def total_visitors(self) -> int:
+        return self.dff[['adults', 'children', 'infants', 'seniors']].sum().sum()
+
+    @total_visitors.setter
+    def total_visitors(self, value):
+        self._total_visitors = value
 
     def all_data(self) -> pd.DataFrame:
         """
@@ -141,7 +152,7 @@ class DataHandler:
 
         for zipCode in zips['zipCode']:
             try:
-                zips.loc[zips['zipCode'] == zipCode, 'lat'] = self.uszips.loc[
+                zips.loc[zips['zipCode'] == zipCode, 'lat'] = uszips.loc[
                     uszips['zip'] == zipCode]['lat'].values[0]
                 zips.loc[zips['zipCode'] == zipCode, 'lng'] = uszips.loc[
                     uszips['zip'] == zipCode]['lng'].values[0]
@@ -149,3 +160,54 @@ class DataHandler:
                 print(f'Zip code "{zipCode}" not found in uszips database')
 
         return zips
+
+    def daily_total_visitor_count(self, window=None) -> pd.DataFrame:
+        """
+        Creates table of total visitor count by day
+
+        Parameters
+        ----------
+        window : int (Optional)
+            Size of window for daily visitor rolling average
+
+        Returns
+        -------
+        pd.DataFrame
+            table of total visitor count by day
+            columns : ',date,"Daily Visitors","Visitors (Rolling)"'
+        """
+        df = self.dff
+
+        # sort by date
+        df = df.sort_values('date')
+
+        # group visitors by date
+        df = df[['date', 'adults', 'children', 'infants', 'seniors']].groupby('date').sum()
+
+        # sum all visitors by date
+        df = df[['adults', 'children', 'infants', 'seniors']].sum(axis=1).reset_index(name='Daily Visitors')
+
+        # Add column for 
+        if window is not None:
+            df[f'Visitors (Rolling)'] = df['Daily Visitors'].rolling(window, center=True).mean()
+
+        return df
+
+    def date_range(self) -> int:
+        """
+        Gets date range in days
+
+        Parameters
+        ----------
+        None
+
+        Returns
+        -------
+        int
+            date range in days
+        """
+        start = date.fromisoformat(self.start_date)
+        end = date.fromisoformat(self.end_date)
+
+        return (end - start).days
+        
