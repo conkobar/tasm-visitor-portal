@@ -189,7 +189,7 @@ class DataHandler:
         -------
         pd.DataFrame
             table of total visitor count by day
-            columns : ',date,"Daily Visitors","Visitors (Rolling)"'
+            columns : ',date,Visitors,"Visitors (Two Week Rolling Avg)"'
         """
         df = self.dff
 
@@ -200,11 +200,11 @@ class DataHandler:
         df = df[['date', 'adults', 'children', 'infants', 'seniors']].groupby('date').sum()
 
         # sum all visitors by date
-        df = df[['adults', 'children', 'infants', 'seniors']].sum(axis=1).reset_index(name='Daily Visitors')
+        df = df[['adults', 'children', 'infants', 'seniors']].sum(axis=1).reset_index(name='Visitors')
 
         # Add column for 
         if window is not None:
-            df[f'Visitors (Rolling)'] = df['Daily Visitors'].rolling(window, center=True).mean()
+            df['Visitor Avg (2wks)'] = df['Visitors'].rolling(window, center=True).mean()
 
         return df
 
