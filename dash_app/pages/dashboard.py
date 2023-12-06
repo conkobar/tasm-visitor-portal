@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
-from dash import Dash, html, dcc, callback, Output, Input
+import dash
+from dash import html, dcc, callback, Output, Input
 from models.data_handler import DataHandler
 from datetime import date
 
@@ -9,10 +10,10 @@ import plotly.express as px
 # import data
 data = DataHandler('dash_app/data/fake_data.csv')
 
-# Create Dash app
-app = Dash(__name__)
+# register page
+dash.register_page(__name__)
 
-app.layout = html.Div(
+layout = html.Div(
     [
         html.H1(children='TASM Data Dashboard'),
 
@@ -143,7 +144,7 @@ def update_visitor_line_chart(start_date, end_date):
 
     # show 14 day rolling average if date range allows
     window = 14 if data.date_range() >= 14 else None
-    y = ['Daily Visitors', 'Visitors (Rolling)'] if window is not None else 'Daily Visitors'
+    y = ['Visitors', 'Visitor Avg (2wks)'] if window is not None else 'Visitors'
 
     # create plot
     fig = px.line(
@@ -151,7 +152,7 @@ def update_visitor_line_chart(start_date, end_date):
         x='date',
         y=y,
         line_shape='spline',
-        labels={'value': 'Visitors', 'date': 'Date'}
+        labels={'value': 'Num. Visitors', 'date': 'Date'}
         )
 
     return fig
@@ -187,7 +188,3 @@ def update_visitor_bar_chart(start_date, end_date):
 def func(n_clicks):
     df = data.dff
     return dcc.send_data_frame(df.to_csv, "tasm_visitor_data(" + data.start_date + '_to_' + data.end_date + ").csv")
-
-
-if __name__ == '__main__':
-    app.run(debug=True)
