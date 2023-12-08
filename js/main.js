@@ -1,17 +1,23 @@
-import { db } from "./firebase.js";
-import { collection, getDocs } from "firebase/firestore";
+import { getCollection, addDocument } from "./firestoreFunctions.js";
 
-const getCollection = async (collectionName) => {
-  try {
-    const col = collection(db, collectionName);
-    const snapshot = await getDocs(col);
-    return snapshot.docs.map((doc) => doc.data());
-  } catch (error) {
-    console.error(error);
-    throw error;
-  }
-};
+if (typeof global === 'undefined') {
+  var global = window;
+}
 
+
+// test getCollection and addDocument
 getCollection("test")
   .then((data) => console.log(data))
   .catch((error) => console.error(error));
+
+// const testData = {
+//   name: "buzz",
+//   goal: "test",
+//   money: false,
+//   hoes: false,
+//   sillyGoose: true,
+//   date: new Date()
+// };
+// addDocument("test", testData)
+//   .then((data) => console.log(data))
+//   .catch((error) => console.error(error));
