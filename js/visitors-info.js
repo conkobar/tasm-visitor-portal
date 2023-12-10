@@ -17,6 +17,8 @@ const updateVisitorsInfo = () => {
 
     // redirect to next page
     window.location.href = './optional-info.html';
+  } else {
+    alert('Name and Zip Code are required fields.');
   }
 
   // show new visitorsInfo object in console

@@ -17,12 +17,14 @@ const updateOptionalInfo = () => {
   };
 
   // check required fields
-  if (visitorsInfo.email && (document.getElementById('radio').checked || document.getElementById('radio-2').checked)) {
+  if (document.getElementById('radio').checked || document.getElementById('radio-2').checked) {
     // store visitorsInfo object in localStorage
     localStorage.setItem('visitorsInfo', JSON.stringify(visitorsInfo));
 
     // redirect to next page
     window.location.href = './confirmation-page.html';
+  } else {
+    alert('Please specify if you are a member.');
   }
 
   // show new visitorsInfo object in console

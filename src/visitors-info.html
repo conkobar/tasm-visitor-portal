@@ -11,6 +11,7 @@
   <link href="../css/normalize.css" rel="stylesheet" type="text/css">
   <link href="../css/webflow.css" rel="stylesheet" type="text/css">
   <link href="../css/tasm-visitor-kiosk.webflow.css" rel="stylesheet" type="text/css">
+  <link href="../css/buzz.css" rel="stylesheet" type="text/css">
   <link href="https://fonts.googleapis.com" rel="preconnect">
   <link href="https://fonts.gstatic.com" rel="preconnect" crossorigin="anonymous">
   <script src="https://ajax.googleapis.com/ajax/libs/webfont/1.6.26/webfont.js" type="text/javascript"></script>
@@ -40,16 +41,18 @@
           <div class="div-block-19">
             <div class="w-layout-grid grid-4"><label for="kid" id="w-node-_157bec2d-26f7-09ba-98eb-1f63bef7de58-eacda296" class="formlabel">Kids (ages 0-4)</label><input type="number" class="formtextfield w-input" maxlength="256" name="Kids" data-name="Kids" placeholder="0" value="0" id="kid"><label for="kid" id="w-node-_0ace2f5f-f693-7b34-6ab3-097e6caee899-eacda296" class="formlabel">Students (ages 5-17)</label><input value="0" type="number" class="formtextfield w-input" maxlength="256" name="Kids" data-name="Kids" placeholder="0" id="student"><label for="adult" id="w-node-_6dace39e-808d-0edc-deac-194af39628d4-eacda296" class="formlabel">Adults (ages 18-64)</label><input value="0" type="number" class="formtextfield w-input" maxlength="256" name="Adults" data-name="Adults" placeholder="0" id="adult"><label for="senior" id="w-node-_2dcf6dfe-035d-d778-9f80-c85a6b45ba8e-eacda296" class="formlabel">Seniors (ages 65+)</label><input value="0" type="number" class="formtextfield w-input" maxlength="256" name="Seniors" data-name="Seniors" placeholder="0" id="senior"></div>
           </div>
-          <a id="next" href="optional-info.html">
-            <input id="next-butt" type="submit" value="Next" data-wait="Please wait..." class="visitor done w-button">
-          </a>
+          <div id="next-box">
+            <a id="next" href="optional-info.html">
+              <input id="next-butt" type="submit" value="Next" data-wait="Please wait..." class="visitor done w-button">
+            </a>
+          </div>
         </form>
-        <div class="w-form-done">
-          <div>Thank you! Your submission has been received!</div>
-        </div>
-        <div class="w-form-fail">
-          <div>Oops! Something went wrong while submitting the form.</div>
-        </div>
+<!--        <div class="w-form-done">-->
+<!--          <div>Thank you! Your submission has been received!</div>-->
+<!--        </div>-->
+<!--        <div class="w-form-fail">-->
+<!--          <div>Oops! Something went wrong while submitting the form.</div>-->
+<!--        </div>-->
       </div>
     </div>
   </section>

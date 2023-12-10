@@ -1,0 +1,19 @@
+#next-box,
+#sub-box {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+#next,
+#submit {
+  z-index: 2;
+  display: inline-block;
+  width: 150px;
+  height: 75px;
+}
+
+#next-butt,
+#sub-butt {
+  z-index: 1;
+}
