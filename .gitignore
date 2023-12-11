@@ -5,3 +5,8 @@ node_modules
 dist
 .cache
 .env
+dash_app/dockerbuildcommand
+__pycache__
+*.ipynb
+*test*
+.DS_Store

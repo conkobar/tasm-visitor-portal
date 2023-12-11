@@ -8,7 +8,7 @@ import plotly.express as px
 
 
 # import data
-data = DataHandler('dash_app/data/fake_data.csv')
+data = DataHandler('/dash_app/data/fake_data.csv')
 
 # register page
 dash.register_page(__name__, '/')
@@ -23,7 +23,7 @@ layout = html.Div(
             ),
             dcc.Interval(
                 id='interval-component',
-                interval=1*1000, # in milliseconds
+                interval=100*1000, # in milliseconds
                 n_intervals=0
         )
     ],
@@ -46,10 +46,11 @@ def update_map(n):
         lon="lng",
         color="counts",
         size="counts",
-        color_continuous_scale=px.colors.sequential.Teal,
+        color_continuous_scale=['#791b1e', '#d9232a', '#00a3da', '#3da447', '#263777'],
         size_max=50,
         zoom=10,
-        hover_data=['zipCode', 'counts']
+        hover_data=['zipCode', 'counts'],
+        opacity=0.5
         )
     fig.update_layout(mapbox_style="open-street-map")
     fig.update_layout(margin={"r":0,"t":0,"l":0,"b":0})

@@ -6,7 +6,7 @@ import pandas as pd
 
 class DataHandler:
     # get zip code data (so we don't have to rebuild the df every time we call zip_code_count())
-    uszips = pd.read_csv('dash_app/data/uszips.csv')
+    uszips = pd.read_csv('/dash_app/data/uszips.csv')
 
     def __init__(self, path, start_date=None, end_date=None) -> None:
         """

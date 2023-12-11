@@ -8,7 +8,7 @@ import plotly.express as px
 
 
 # import data
-data = DataHandler('dash_app/data/fake_data.csv')
+data = DataHandler('/dash_app/data/fake_data.csv')
 
 # register page
 dash.register_page(__name__)
@@ -93,7 +93,6 @@ layout = html.Div(
     }
 )
 
-
 @callback(
     Output('output-container-date-picker-range', 'children'),
     Output('visitor_count', 'children'),
@@ -120,7 +119,6 @@ def update_output(start_date, end_date):
     else:
         return string_prefix, visitor_count_string
 
-
 @callback(
     Output('my-date-picker-range', 'start_date'),
     Output('my-date-picker-range', 'end_date'),
@@ -129,7 +127,6 @@ def update_output(start_date, end_date):
 def reset_dates(n_clicks):
     data.reset()
     return data.start_date, data.end_date
-
 
 @callback(
     Output("visitor_line_chart", "figure"),
@@ -157,7 +154,6 @@ def update_visitor_line_chart(start_date, end_date):
 
     return fig
 
-
 @callback(
     Output("visitor_bar_chart", "figure"),
     Input("my-date-picker-range", "start_date"),
@@ -178,7 +174,6 @@ def update_visitor_bar_chart(start_date, end_date):
         )
 
     return fig
-
 
 @callback(
     Output("download-dataframe-csv", "data"),
