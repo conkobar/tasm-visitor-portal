@@ -8,6 +8,7 @@
 #next,
 #submit {
   z-index: 2;
+  text-decoration: none;
   display: inline-block;
   width: 150px;
   height: 75px;
