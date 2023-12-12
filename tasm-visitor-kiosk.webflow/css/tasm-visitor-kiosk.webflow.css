@@ -1080,10 +1080,15 @@
 .formtextfield {
   width: 10svw;
   height: 7svh;
+  aspect-ratio: auto;
+  text-align: center;
+  -webkit-text-stroke-width: 0px;
+  object-fit: fill;
   background-color: #f0efef;
   border-radius: 3px;
   margin-top: 0;
   font-family: Lato, sans-serif;
+  font-size: 20px;
   line-height: 30px;
 }
 
@@ -1091,6 +1096,7 @@
   width: 400px;
   height: 60px;
   opacity: 1;
+  text-align: left;
 }
 
 .form-5 {
