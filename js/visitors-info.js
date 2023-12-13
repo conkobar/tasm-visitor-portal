@@ -1,17 +1,7 @@
-import { checkAuthState } from "./authFunctions";
+import { checkAuthState, getCurrentDate } from "./authFunctions";
 
 // new visitors test info object
-let visitorsInfo = {};
-
-// get the current date
-visitorsInfo.date = () => {
-  const date = new Date();
-  const year = date.getFullYear();
-  const month = date.getMonth() + 1;
-  const day = date.getDate();
-
-  return `${year}-${month}-${day}`;
-};
+let visitorsInfo = { date: getCurrentDate() };
 
 // function to update visitorsInfo object
 const updateVisitorsInfo = () => {

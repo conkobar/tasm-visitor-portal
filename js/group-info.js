@@ -1,18 +1,7 @@
-import { checkAuthState } from "./authFunctions";
-
+import { checkAuthState, getCurrentDate } from "./authFunctions";
 
 // initialize groupInfo object
-let groupInfo = {};
-
-// get the current date
-groupInfo.date = () => {
-  const date = new Date();
-  const year = date.getFullYear();
-  const month = date.getMonth() + 1;
-  const day = date.getDate();
-
-  return `${year}-${month}-${day}`;
-};
+let groupInfo = { date: getCurrentDate() };
 
 // update groupInfo when user clicks next button
 const updateGroupInfo = () => {
