@@ -1,14 +1,11 @@
 #!/usr/bin/env python3
 import dash
-from dash import html, dcc, callback, Output, Input
-from models.data_handler import DataHandler
-from datetime import date
-
 import plotly.express as px
 
+from dash import html, dcc, callback, Output, Input
+from datetime import date
+from models import data
 
-# import data
-data = DataHandler('/dash_app/data/fake_data.csv')
 
 # register page
 dash.register_page(__name__, '/')
