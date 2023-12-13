@@ -38,4 +38,6 @@ const updateOptionalInfo = () => {
 document.getElementById('submit').addEventListener('click', updateOptionalInfo);
 
 // check if user is signed in
-document.addEventListener('DOMContentLoaded', checkAuthState);
+document.addEventListener('DOMContentLoaded', () => {
+  checkAuthState(() => window.location.href = './index.html');
+});

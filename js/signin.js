@@ -1,4 +1,4 @@
-import { signIn, signOutUser } from "./authFunctions";
+import {signIn, signOutUser, checkAuthStateFalse, checkAuthState} from "./authFunctions";
 
 document.getElementById("sign-in-btn").addEventListener("click", () => {
   const email = document.getElementById("sign-in-email").value;
@@ -13,4 +13,9 @@ document.getElementById("sign-out-btn").addEventListener("click", () => {
   signOutUser()
     .then(() => console.log("signed out"))
     .catch(e => console.error(e));
+});
+
+// check if user is signed in
+document.addEventListener('DOMContentLoaded', () => {
+  checkAuthState(() => document.getElementById('sign-in-form').style.display = 'flex');
 });

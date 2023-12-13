@@ -54,4 +54,6 @@ const updateGroupInfo = () => {
 document.getElementById('group').addEventListener('click', updateGroupInfo);
 
 // check if user is signed in
-document.addEventListener('DOMContentLoaded', checkAuthState);
+document.addEventListener('DOMContentLoaded', () => {
+  checkAuthState(() => window.location.href = './index.html');
+});

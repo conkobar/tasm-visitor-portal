@@ -7,7 +7,7 @@ const signIn = async (email, password) => {
       // Signed in
       const user = userCredential.user;
       console.log('user', user);
-      document.getElementById('sign-in-box').style.display = 'none';
+      document.getElementById('sign-in-form').style.display = 'none';
     })
     .catch((error) => {
       console.log(`${error.code}: ${error.message})`);
@@ -23,15 +23,33 @@ const signOutUser = async () => {
 };
 
 // checks if firebase user is signed in
-const checkAuthState = () => {
+const checkAuthState = (callback) => {
   onAuthStateChanged(auth, (user) => {
     if (user) {
       console.log(`User ${user.uid} is signed in`);
     } else {
-      window.location.href = './index.html';
-      console.log('user is not signed in');
+      console.log('User is not signed in');
+      // Ensure the callback is a function before calling it
+      if (typeof callback === 'function') {
+        callback();
+      }
     }
   });
 };
 
-export { signIn, signOutUser, checkAuthState };
+// checks if firebase user is signed in with false callback
+const checkAuthStateFalse = (callback) => {
+  onAuthStateChanged(auth, (user) => {
+    if (user) {
+      console.log(`User ${user.uid} is signed in`);
+      // Ensure the callback is a function before calling it
+      if (typeof callback === 'function') {
+        callback();
+      }
+    } else {
+      console.log('User is not signed in');
+    }
+  });
+};
+
+export { signIn, signOutUser, checkAuthState, checkAuthStateFalse };

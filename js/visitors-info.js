@@ -41,4 +41,6 @@ const updateVisitorsInfo = () => {
 document.getElementById('next').addEventListener('click', updateVisitorsInfo);
 
 // check if user is signed in
-document.addEventListener('DOMContentLoaded', checkAuthState);
+document.addEventListener('DOMContentLoaded', () => {
+  checkAuthState(() => window.location.href = './index.html');
+});
