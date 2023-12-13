@@ -284,8 +284,7 @@ class DataHandler:
             vdf['Visitor Avg (2wks)'] = vdf['Non-School Visitors'].rolling(window, center=True).mean()
             gdf['Group Avg (2wks)'] = gdf['School Group Visitors'].rolling(window, center=True).mean()
 
-
-        return df
+        return vdf.merge(gdf, how='outer').fillna(0)
 
     def date_range(self) -> int:
         """
@@ -304,4 +303,3 @@ class DataHandler:
         end = date.fromisoformat(self.end_date)
 
         return (end - start).days
-        
