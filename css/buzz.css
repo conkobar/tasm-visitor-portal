@@ -18,3 +18,9 @@
 #sub-butt {
   z-index: 1;
 }
+
+#sign-in-form {
+  display: none;
+  justify-content: center;
+  align-items: center;
+}

@@ -1,5 +1,7 @@
-// new visitors test info
-let visitorsInfo = {};
+import { checkAuthState, getCurrentDate } from "./authFunctions";
+
+// new visitors test info object
+let visitorsInfo = { date: getCurrentDate() };
 
 // function to update visitorsInfo object
 const updateVisitorsInfo = () => {
@@ -27,3 +29,8 @@ const updateVisitorsInfo = () => {
 
 // listen for click on next button
 document.getElementById('next').addEventListener('click', updateVisitorsInfo);
+
+// check if user is signed in
+document.addEventListener('DOMContentLoaded', () => {
+  checkAuthState(() => window.location.href = './index.html');
+});

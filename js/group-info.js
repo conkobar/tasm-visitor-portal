@@ -1,5 +1,7 @@
+import { checkAuthState, getCurrentDate } from "./authFunctions";
+
 // initialize groupInfo object
-let groupInfo = {};
+let groupInfo = { date: getCurrentDate() };
 
 // update groupInfo when user clicks next button
 const updateGroupInfo = () => {
@@ -39,3 +41,8 @@ const updateGroupInfo = () => {
 
 // listen for next button to be clicked
 document.getElementById('group').addEventListener('click', updateGroupInfo);
+
+// check if user is signed in
+document.addEventListener('DOMContentLoaded', () => {
+  checkAuthState(() => window.location.href = './index.html');
+});

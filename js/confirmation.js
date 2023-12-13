@@ -1,5 +1,7 @@
 import { addDocument } from "./firestoreFunctions";
+import { checkAuthState } from "./authFunctions";
 
+// pushes local data to fb
 const confirmData = async () => {
   let visitorsInfo = JSON.parse(localStorage.getItem('visitorsInfo'));
   let groupInfo = JSON.parse(localStorage.getItem('groupInfo'));
@@ -25,8 +27,12 @@ const confirmData = async () => {
   localStorage.clear();
 };
 
+// confirm local storage data
 if (window.location.pathname === '/confirmation-page.html') {
   confirmData()
     .then(data => console.log(data))
     .catch(error => console.error(error));
 }
+
+// check if user is signed in
+document.addEventListener('DOMContentLoaded', checkAuthState);
