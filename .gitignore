@@ -10,3 +10,5 @@ __pycache__
 *.ipynb
 *test*
 .DS_Store
+dash_app/firebase_creds/
+dash_app/docker/

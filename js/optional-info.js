@@ -10,14 +10,12 @@ console.log(visitorsInfo);
 const updateOptionalInfo = () => {
   visitorsInfo.membership = document.getElementById('radio').checked;
   visitorsInfo.email = document.getElementById('email-2').value;
-  visitorsInfo.heardAbout = {
-    website: document.getElementById('checkbox').checked,
-    facebook: document.getElementById('checkbox-6').checked,
-    instagram: document.getElementById('checkbox-5').checked,
-    twitter: document.getElementById('checkbox-4').checked,
-    linkedin: document.getElementById('checkbox-3').checked,
-    other: document.getElementById('checkbox-2').checked
-  };
+  visitorsInfo.website = document.getElementById('checkbox').checked,
+  visitorsInfo.facebook = document.getElementById('checkbox-6').checked,
+  visitorsInfo.instagram = document.getElementById('checkbox-5').checked,
+  visitorsInfo.twitter = document.getElementById('checkbox-4').checked,
+  visitorsInfo.linkedin = document.getElementById('checkbox-3').checked,
+  visitorsInfo.other = document.getElementById('checkbox-2').checked
 
   // check required fields
   if (document.getElementById('radio').checked || document.getElementById('radio-2').checked) {
