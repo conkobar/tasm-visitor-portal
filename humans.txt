@@ -12,6 +12,7 @@
 
     Holberton School Tulsa
     Tulsa Air and Space Museum
+    Wes Rose
 
 # TECHNOLOGY COLOPHON
 

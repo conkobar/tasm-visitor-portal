@@ -1,5 +1,18 @@
+import { checkAuthState } from "./authFunctions";
+
+
 // initialize groupInfo object
 let groupInfo = {};
+
+// get the current date
+groupInfo.date = () => {
+  const date = new Date();
+  const year = date.getFullYear();
+  const month = date.getMonth() + 1;
+  const day = date.getDate();
+
+  return `${year}-${month}-${day}`;
+};
 
 // update groupInfo when user clicks next button
 const updateGroupInfo = () => {
@@ -39,3 +52,6 @@ const updateGroupInfo = () => {
 
 // listen for next button to be clicked
 document.getElementById('group').addEventListener('click', updateGroupInfo);
+
+// check if user is signed in
+document.addEventListener('DOMContentLoaded', checkAuthState);

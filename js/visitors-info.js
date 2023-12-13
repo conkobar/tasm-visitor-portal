@@ -1,5 +1,17 @@
-// new visitors test info
+import { checkAuthState } from "./authFunctions";
+
+// new visitors test info object
 let visitorsInfo = {};
+
+// get the current date
+visitorsInfo.date = () => {
+  const date = new Date();
+  const year = date.getFullYear();
+  const month = date.getMonth() + 1;
+  const day = date.getDate();
+
+  return `${year}-${month}-${day}`;
+};
 
 // function to update visitorsInfo object
 const updateVisitorsInfo = () => {
@@ -27,3 +39,6 @@ const updateVisitorsInfo = () => {
 
 // listen for click on next button
 document.getElementById('next').addEventListener('click', updateVisitorsInfo);
+
+// check if user is signed in
+document.addEventListener('DOMContentLoaded', checkAuthState);

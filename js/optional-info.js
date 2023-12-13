@@ -1,3 +1,6 @@
+import { checkAuthState } from "./authFunctions";
+
+
 // get the visitors info from local storage
 let visitorsInfo = JSON.parse(localStorage.getItem('visitorsInfo'));
 
@@ -31,4 +34,8 @@ const updateOptionalInfo = () => {
   console.log(visitorsInfo);
 };
 
+// listen for click on submit button
 document.getElementById('submit').addEventListener('click', updateOptionalInfo);
+
+// check if user is signed in
+document.addEventListener('DOMContentLoaded', checkAuthState);
