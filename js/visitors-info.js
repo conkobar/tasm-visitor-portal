@@ -12,6 +12,11 @@ const updateVisitorsInfo = () => {
   visitorsInfo.adults = parseInt(document.getElementById('adult').value),
   visitorsInfo.seniors = parseInt(document.getElementById('senior').value);
 
+  // check null values
+  for (let key in visitorsInfo) {
+    if (Number.isNaN(visitorsInfo[key])) visitorsInfo[key] = 0;
+  }
+
   // check required fields
   if (visitorsInfo.name && visitorsInfo.zip) {
     // store visitorsInfo object in localStorage
