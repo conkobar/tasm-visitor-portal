@@ -31,27 +31,30 @@ class DataHandler:
         # Initialize Firebase
         cred = credentials.ApplicationDefault()
         firebase_admin.initialize_app(cred)
+        self.db = firestore.Client(project='tasm-visitor-signin')
         self.visitor_collection_ref = self.db.collection('visitors')
         self.group_collection_ref = self.db.collection('groups')
-        self.db = firestore.Client(project='tasm-visitor-signin')
 
-        # Create frame variable
-        self.visitor_df = None
-        self.group_df = None
+        # Initialize dataframes
+        self.visitor_df = self.get_firestore_data(self.visitor_collection_ref)
+        self.group_df = self.get_firestore_data(self.group_collection_ref)
+
+        self.start_listening()
 
         # Set initial start and end dates for filtered dataframe
         if start_date == None:
-            self._start_date = self.df['date'].min()
+            self._start_date = min(self.visitor_df['date'].min(), self.group_df['date'].min())
         else:
             self._start_date = start_date
         if end_date == None:
-            self._end_date = self.df['date'].max()
+            self._end_date = max(self.visitor_df['date'].max(), self.group_df['date'].max())
         else:
             self._end_date = end_date
 
         # Create date-filtered dataframe
-        self.visitor_dff = self.filter_data(self.visitor_df)
-        self.group_dff = self.filter_data(self.group_df)
+        self.visitor_dff = None
+        self.group_dff = None
+        self.filter_data()
 
         # Get stats from dff
         self._visitor_totals = self.visitor_totals
@@ -63,7 +66,6 @@ class DataHandler:
 
         for doc in doc_snapshot:
             if doc.exists:
-                print(f'Received document snapshot: {doc.id}')
                 # Check the collection from which the document originates
                 if 'visitors' in doc.reference.path:
                     data_list.append(doc.to_dict())
@@ -73,8 +75,21 @@ class DataHandler:
         if data_list:
             if 'visitors' in doc.reference.path:
                 self.visitor_df = pd.DataFrame(data_list)
+                self.filter_data()
             elif 'groups' in doc.reference.path:
                 self.group_df = pd.DataFrame(data_list)
+                self.filter_data()
+
+    # Firebase method
+    def get_firestore_data(self, collection_ref):
+        data_list = []
+        docs = collection_ref.stream()
+
+        for doc in docs:
+            if doc.exists:
+                data_list.append(doc.to_dict())
+
+        return pd.DataFrame(data_list)
 
     # Firebase method
     def start_listening(self):
@@ -110,14 +125,14 @@ class DataHandler:
     @end_date.setter
     def end_date(self, value):
         if not value:
-            self._start_date = max(self.visitor_df['date'].max(), self.group_df['date'].max())
+            self._end_date = max(self.visitor_df['date'].max(), self.group_df['date'].max())
         else:
-            self._start_date = value
+            self._end_date = value
 
     # visitor_totals getter
     @property
     def visitor_totals(self) -> int:
-        return self.visitor_dff[['adult', 'student', 'kid', 'senior']].sum().sum()
+        return self.visitor_dff[['adults', 'students', 'kids', 'seniors']].sum().sum()
 
     # visitor_totals setter
     @visitor_totals.setter
@@ -164,7 +179,7 @@ class DataHandler:
         """
         return self.group_df
 
-    def filter_data(self, df) -> pd.DataFrame:
+    def filter_data(self) -> pd.DataFrame:
         """
         Creates date-filtered dataframe
 
@@ -179,9 +194,10 @@ class DataHandler:
             Dataframe filtered by date
         """
         # filter df using mask
-        mask = (df['date'] >= self._start_date) & (df['date'] <= self._end_date)
-        dff = df.loc[mask]
-        return dff
+        visitor_mask = (self.visitor_df['date'] >= self._start_date) & (self.visitor_df['date'] <= self._end_date)
+        self.visitor_dff = self.visitor_df.loc[visitor_mask]
+        group_mask = (self.group_df['date'] >= self._start_date) & (self.group_df['date'] <= self._end_date)
+        self.group_dff = self.group_df.loc[group_mask]
 
     def reset(self) -> None:
         """
@@ -197,7 +213,8 @@ class DataHandler:
         """
         self._start_date = min(self.visitor_df['date'].min(), self.group_df['date'].min())
         self._end_date = max(self.visitor_df['date'].max(), self.group_df['date'].max())
-        self.dff = self.df
+        self.visitor_dff = self.visitor_df
+        self.group_dff = self.group_df
 
     def zip_code_count(self) -> pd.DataFrame:
         """
@@ -231,7 +248,7 @@ class DataHandler:
                 zips.loc[zips['zip'] == zipCode, 'lng'] = uszips.loc[
                     uszips['zip'] == zipCode]['lng'].values[0]
             except Exception:
-                print(f'Zip code "{zipCode}" not found in uszips database')
+                pass
 
         return zips
 
@@ -248,7 +265,11 @@ class DataHandler:
         pd.DataFrame
             Breakdown of visitors by category
         """
-        return self.dff[['adult', 'student', 'kid', 'senior']].sum()
+        df = self.visitor_dff[['adults', 'students', 'kids', 'seniors']].sum()
+        df['adults'] += self.group_dff['students'].sum()
+        df['students'] += self.group_dff['adults'].sum()
+
+        return df
 
     def daily_total_visitor_count(self, window=None) -> pd.DataFrame:
         """
@@ -272,11 +293,11 @@ class DataHandler:
         gdf = gdf.sort_values('date')
 
         # group visitors by date
-        vdf = vdf[['date', 'adult', 'kid', 'student', 'senior']].groupby('date').sum()
+        vdf = vdf[['date', 'adults', 'kids', 'students', 'seniors']].groupby('date').sum()
         gdf = gdf[['date', 'adults', 'students']].groupby('date').sum()
 
         # sum all visitors by date
-        vdf = vdf[['adult', 'kid', 'student', 'senior']].sum(axis=1).reset_index(name='Non-School Visitors')
+        vdf = vdf[['adults', 'kids', 'students', 'seniors']].sum(axis=1).reset_index(name='Non-School Visitors')
         gdf = gdf[['adults', 'students']].sum(axis=1).reset_index(name='School Group Visitors')
 
         # Add column for rolling avg

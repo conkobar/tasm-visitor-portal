@@ -100,7 +100,7 @@ def update_output(start_date, end_date):
     data.end_date = end_date
     data.filter_data()
 
-    visitor_count_string = f'{data.total_visitors} total visitors in selected date range'
+    visitor_count_string = f'{int(data.visitor_totals + data.group_totals)} total visitors in selected date range'
 
     string_prefix = 'You have selected: '
     if start_date is not None:
@@ -137,8 +137,10 @@ def update_visitor_line_chart(start_date, end_date):
     data.filter_data()
 
     # show 14 day rolling average if date range allows
+    y =  ['Non-School Visitors', 'School Group Visitors']
     window = 14 if data.date_range() >= 14 else None
-    y = ['Visitors', 'Visitor Avg (2wks)'] if window is not None else 'Visitors'
+    if window is not None:
+        y.append('Visitor Avg (2wks)')
 
     # create plot
     fig = px.line(
@@ -163,10 +165,17 @@ def update_visitor_bar_chart(start_date, end_date):
     data.filter_data()
 
     # create plot
-    df = data.visitor_demographics()
+    df = data.visitor_demographics().rename({
+        'adults': "Adults (18-64)",
+        'students': "Students (5-17)",
+        'kids': "Children (0-4)",
+        'seniors': 'Seniors (65+)'
+        })
     fig = px.bar(
         df,
-        labels={'value': 'Num. Visitors', 'index': 'Category'},
+        labels={'value': 'Num. Visitors',
+                'index': 'Category'
+                },
         color=df.index
         )
 
@@ -178,5 +187,5 @@ def update_visitor_bar_chart(start_date, end_date):
     prevent_initial_call=True,
 )
 def func(n_clicks):
-    df = data.dff
+    df = data.visitor_dff.merge(data.group_dff, how='outer')
     return dcc.send_data_frame(df.to_csv, "tasm_visitor_data(" + data.start_date + '_to_' + data.end_date + ").csv")
