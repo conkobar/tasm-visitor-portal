@@ -47,7 +47,8 @@ def update_map(n):
         size_max=50,
         zoom=10,
         hover_data=['zip', 'counts'],
-        opacity=0.5
+        opacity=0.5,
+        center={'lat': 36.1540, 'lon': -95.937332}
         )
     fig.update_layout(mapbox_style="open-street-map")
     fig.update_layout(margin={"r":0,"t":0,"l":0,"b":0})
