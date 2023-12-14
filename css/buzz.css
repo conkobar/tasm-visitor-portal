@@ -7,7 +7,7 @@
 
 #next,
 #submit {
-  z-index: 2;
+  z-index: 3;
   text-decoration: none;
   display: inline-block;
   width: 150px;
@@ -16,7 +16,8 @@
 
 #next-butt,
 #sub-butt {
-  z-index: 1;
+  position: relative;
+  z-index: 2;
 }
 
 #sign-in-form {
