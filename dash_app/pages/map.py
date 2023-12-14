@@ -20,7 +20,7 @@ layout = html.Div(
             ),
             dcc.Interval(
                 id='interval-component',
-                interval=100*1000, # in milliseconds
+                interval=5*1000, # in milliseconds
                 n_intervals=0
         )
     ],
@@ -46,8 +46,9 @@ def update_map(n):
         color_continuous_scale=['#791b1e', '#d9232a', '#00a3da', '#3da447', '#263777'],
         size_max=50,
         zoom=10,
-        hover_data=['zipCode', 'counts'],
-        opacity=0.5
+        hover_data=['zip', 'counts'],
+        opacity=0.5,
+        center={'lat': 36.1540, 'lon': -95.937332}
         )
     fig.update_layout(mapbox_style="open-street-map")
     fig.update_layout(margin={"r":0,"t":0,"l":0,"b":0})
