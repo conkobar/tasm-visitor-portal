@@ -24,9 +24,15 @@ const updateGroupInfo = () => {
   groupInfo.twelfthGrade = parseInt(document.getElementById('grade-12').value);
 
   // handle zip code (for sake of demo)
-  if (groupInfo.groupName === 'Group 1') groupInfo.zip = 74131;
-  if (groupInfo.groupName === 'Group 2') groupInfo.zip = 74135;
-  if (groupInfo.groupName === 'Group 3') groupInfo.zip = 74105;
+  if (groupInfo.groupName === 'First') groupInfo.zip = 74131;
+  if (groupInfo.groupName === 'Second') groupInfo.zip = 74135;
+  if (groupInfo.groupName === 'Third') groupInfo.zip = 74105;
+  if (groupInfo.groupName === 'Fourth') groupInfo.zip = 74107;
+
+  // check null values
+  for (let key in groupInfo) {
+    if (Number.isNaN(groupInfo[key])) groupInfo[key] = 0;
+  }
 
   // check required fields
   if (groupInfo.name !== '') {

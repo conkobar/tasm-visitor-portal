@@ -24,7 +24,7 @@ const confirmData = async () => {
     }
   }
 
-  localStorage.clear();
+  // localStorage.clear();
 };
 
 // confirm local storage data
