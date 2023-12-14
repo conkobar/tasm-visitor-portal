@@ -142,7 +142,8 @@
 }
 
 .logo {
-  width: 600px;
+  width: 570px;
+  height:auto;
   object-fit: contain;
   margin: 30px 80px 20px;
 }
@@ -1717,4 +1718,4 @@
   #w-node-_4d99b96f-ce0a-f96c-4ede-d7d3433b821b-56e7bdfe {
     justify-self: center;
   }
-}
+} 
