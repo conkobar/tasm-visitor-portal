@@ -23,6 +23,10 @@ const updateGroupInfo = () => {
   groupInfo.eleventhGrade = parseInt(document.getElementById('grade-11').value);
   groupInfo.twelfthGrade = parseInt(document.getElementById('grade-12').value);
 
+  // handle zip code (for sake of demo)
+  if (groupInfo.groupName === 'Group 1') groupInfo.zip = 74131;
+  if (groupInfo.groupName === 'Group 2') groupInfo.zip = 74135;
+  if (groupInfo.groupName === 'Group 3') groupInfo.zip = 74105;
 
   // check required fields
   if (groupInfo.name !== '') {
@@ -31,6 +35,7 @@ const updateGroupInfo = () => {
 
     // redirect to next page
     window.location.href = './confirmation-page.html';
+
   } else {
     alert('Group Name is a required field.');
   }

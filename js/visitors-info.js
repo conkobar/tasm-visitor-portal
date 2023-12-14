@@ -7,10 +7,10 @@ let visitorsInfo = { date: getCurrentDate() };
 const updateVisitorsInfo = () => {
   visitorsInfo.name = document.getElementById('name').value,
   visitorsInfo.zip = parseInt(document.getElementById('zip').value),
-  visitorsInfo.kid = parseInt(document.getElementById('kid').value),
-  visitorsInfo.student = parseInt(document.getElementById('student').value),
-  visitorsInfo.adult = parseInt(document.getElementById('adult').value),
-  visitorsInfo.senior = parseInt(document.getElementById('senior').value);
+  visitorsInfo.kids = parseInt(document.getElementById('kid').value),
+  visitorsInfo.students = parseInt(document.getElementById('student').value),
+  visitorsInfo.adults = parseInt(document.getElementById('adult').value),
+  visitorsInfo.seniors = parseInt(document.getElementById('senior').value);
 
   // check required fields
   if (visitorsInfo.name && visitorsInfo.zip) {
