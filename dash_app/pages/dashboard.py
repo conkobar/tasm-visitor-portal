@@ -138,7 +138,7 @@ def update_visitor_line_chart(start_date, end_date):
 
     # show 14 day rolling average if date range allows
     y =  ['Non-School Visitors', 'School Group Visitors']
-    window = 14 if data.date_range() >= 14 else None
+    window = 14 if data.date_range() >= 60 else None
     if window is not None:
         y.append('Visitor Avg (2wks)')
 
@@ -148,7 +148,8 @@ def update_visitor_line_chart(start_date, end_date):
         x='date',
         y=y,
         line_shape='spline',
-        labels={'value': 'Num. Visitors', 'date': 'Date'}
+        labels={'value': 'Num. Visitors', 'date': 'Date'},
+        color_discrete_sequence=['#d9232a', '#00a3da', '#3da447', '#263777']
         )
 
     return fig
@@ -176,7 +177,8 @@ def update_visitor_bar_chart(start_date, end_date):
         labels={'value': 'Num. Visitors',
                 'index': 'Category'
                 },
-        color=df.index
+        color=df.index,
+        color_discrete_sequence=['#d9232a', '#00a3da', '#3da447', '#263777']
         )
 
     return fig
@@ -187,5 +189,5 @@ def update_visitor_bar_chart(start_date, end_date):
     prevent_initial_call=True,
 )
 def func(n_clicks):
-    df = data.visitor_dff.merge(data.group_dff, how='outer')
+    df = data.visitor_dff.merge(data.group_dff, how='outer').sort_values('date').reset_index(drop=True)
     return dcc.send_data_frame(df.to_csv, "tasm_visitor_data(" + data.start_date + '_to_' + data.end_date + ").csv")

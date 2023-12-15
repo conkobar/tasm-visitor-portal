@@ -251,7 +251,10 @@ class DataHandler:
             except Exception:
                 pass
 
-        return zips
+        if len(zips) > 0:
+            return zips
+        else:
+            return pd.DataFrame(columns=['zip', 'lat', 'lng', 'counts'])
 
     def visitor_demographics(self) -> pd.DataFrame:
         """

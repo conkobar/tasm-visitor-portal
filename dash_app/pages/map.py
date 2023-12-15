@@ -12,17 +12,23 @@ dash.register_page(__name__)
 
 layout = html.Div(
     [
+        dcc.DatePickerRange(
+            id='map-date-picker-range',
+            start_date=data.start_date,
+            end_date=data.end_date
+            ),
+        html.H2(id='map_visitor_count'),
         dcc.Graph(
             id='graph_content',
             style={'height': '700px',
                    'width': '1000px',
                    'align-self': 'center'}
             ),
-            dcc.Interval(
-                id='interval-component',
-                interval=5*1000, # in milliseconds
-                n_intervals=0
-        )
+        dcc.Interval(
+            id='interval-component',
+            interval=5*1000, # in milliseconds
+            n_intervals=0
+            )
     ],
 
     style={
@@ -54,3 +60,17 @@ def update_map(n):
     fig.update_layout(margin={"r":0,"t":0,"l":0,"b":0})
 
     return fig
+
+@callback(
+    Output('map_visitor_count', 'children'),
+    Input('map-date-picker-range', 'start_date'),
+    Input('map-date-picker-range', 'end_date'),
+    Input("interval-component", "n_intervals"))
+def update_map(start_date, end_date, n):
+    data.start_date = start_date
+    data.end_date = end_date
+    data.filter_data()
+
+    visitor_count_string = f'{int(data.visitor_totals + data.group_totals)} total visitors in selected date range'
+
+    return visitor_count_string
