@@ -8,7 +8,7 @@ from models import data
 
 
 # register page
-dash.register_page(__name__)
+dash.register_page(__name__, '/')
 
 layout = html.Div(
     [
