@@ -10,8 +10,8 @@ from google.cloud import firestore
 
 class DataHandler:
     # get zip code data (so we don't have to rebuild the df every time we call zip_code_count())
-    uszips = pd.read_csv('data/uszips.csv') # For local testing only
-    # uszips = pd.read_csv('/dash_app/data/uszips.csv') # for use in deployment
+    # uszips = pd.read_csv('data/uszips.csv') # For local testing only
+    uszips = pd.read_csv('/dash_app/data/uszips.csv') # for use in deployment
 
     def __init__(self, start_date=None, end_date=None) -> None:
         """

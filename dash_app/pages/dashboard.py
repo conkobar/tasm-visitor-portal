@@ -148,7 +148,7 @@ def update_visitor_line_chart(start_date, end_date):
         x='date',
         y=y,
         line_shape='spline',
-        labels={'value': 'Num. Visitors', 'date': 'Date'},
+        labels={'value': 'Num. Visitors', 'date': 'Date', 'variable': 'Visitor Type'},
         color_discrete_sequence=['#d9232a', '#00a3da', '#3da447', '#263777']
         )
 
