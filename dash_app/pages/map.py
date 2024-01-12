@@ -40,11 +40,16 @@ layout = html.Div(
 
 @callback(
     Output("graph_content", "figure"),
-    Input("interval-component", "n_intervals")
+    Input("interval-component", "n_intervals"),
+    Input('map-date-picker-range', 'start_date'),
+    Input('map-date-picker-range', 'end_date')
 )
-def update_map(n):
+def update_map(n, start_date, end_date):
+    vdff = data.filter_data(data.visitor_df, start_date, end_date)
+    gdff = data.filter_data(data.group_df, start_date, end_date)
+
     fig = px.scatter_mapbox(
-        data.zip_code_count(),
+        data.zip_code_count(vdff, gdff),
         lat="lat",
         lon="lng",
         color="counts",
@@ -67,10 +72,9 @@ def update_map(n):
     Input('map-date-picker-range', 'end_date'),
     Input("interval-component", "n_intervals"))
 def update_map(start_date, end_date, n):
-    data.start_date = start_date
-    data.end_date = end_date
-    data.filter_data()
+    vdff = data.filter_data(data.visitor_df, start_date, end_date)
+    gdff = data.filter_data(data.group_df, start_date, end_date)
 
-    visitor_count_string = f'{int(data.visitor_totals + data.group_totals)} total visitors in selected date range'
+    visitor_count_string = f'{data.count_visitors(vdff) + data.count_visitors(gdff)} total visitors in selected date range'
 
     return visitor_count_string
