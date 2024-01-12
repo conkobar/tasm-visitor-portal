@@ -1027,6 +1027,16 @@
   right: auto;
 }
 
+.returnbtn::before {
+  content: '\21E6'; /* Unicode for left arrow */
+  font-size: 24px;
+  padding-right: 10px;
+}
+
+.image-11 {
+  display: none !important;
+}
+
 .returncontainer {
   width: 100svw;
   max-width: none;
@@ -1364,7 +1374,7 @@
 .checkbox-label-6 {
   color: #fff;
   padding-top: 12px;
-  padding-left: 18px;
+  padding-left: 15px;
   font-family: Lato, sans-serif;
   font-size: 18px;
   font-weight: 400;
