@@ -1,11 +1,14 @@
 import { checkAuthState, getCurrentDate } from "./authFunctions";
+import { checkInput} from "./data_validators";
+import { getCollection } from "./firestoreFunctions";
 
 // initialize groupInfo object
 let groupInfo = { date: getCurrentDate() };
 
 // update groupInfo when user clicks next button
 const updateGroupInfo = () => {
-  groupInfo.groupName = document.getElementById('Group-2').value;
+  groupInfo.groupName = document.getElementById('Group-2').textContent;
+  groupInfo.zip = parseInt(document.getElementById('Group-2').value);
   groupInfo.students = parseInt(document.getElementById('students').value);
   groupInfo.adults = parseInt(document.getElementById('adults').value);
   groupInfo.boys = parseInt(document.getElementById('boys').value);
@@ -23,15 +26,12 @@ const updateGroupInfo = () => {
   groupInfo.eleventhGrade = parseInt(document.getElementById('grade-11').value);
   groupInfo.twelfthGrade = parseInt(document.getElementById('grade-12').value);
 
-  // handle zip code (for sake of demo)
-  if (groupInfo.groupName === 'First') groupInfo.zip = 74131;
-  if (groupInfo.groupName === 'Second') groupInfo.zip = 74135;
-  if (groupInfo.groupName === 'Third') groupInfo.zip = 74105;
-  if (groupInfo.groupName === 'Fourth') groupInfo.zip = 74107;
-
-  // check null values
+  // check input values
   for (let key in groupInfo) {
-    if (Number.isNaN(groupInfo[key])) groupInfo[key] = 0;
+    // check input if it is a number
+    if (typeof groupInfo[key] === 'number') {
+      groupInfo[key] = checkInput(groupInfo[key]);
+    }
   }
 
   // check required fields
@@ -57,3 +57,33 @@ document.getElementById('group').addEventListener('click', updateGroupInfo);
 document.addEventListener('DOMContentLoaded', () => {
   checkAuthState(() => window.location.href = './index.html');
 });
+
+// populate groups list from firebase
+const populateGroups = () => {
+  // get groups from firebase
+  const groupsRef = getCollection('schools');
+  console.log(groupsRef);
+
+  // Get the select element
+  const selectElement = document.getElementById("Group-2");
+
+  // Loop through the array and append options to the select element
+  groupsRef.then((groups) => {
+    groups.forEach((group) => {
+      console.log(group);
+      console.log(group.name);
+      // Create an option element
+      const optionElement = document.createElement("option");
+
+      // Assign text and value to option element
+      optionElement.textContent = group.name;
+      optionElement.value = group.zip;
+
+      // Append the option element to the select element
+      selectElement.appendChild(optionElement);
+    });
+  });
+};
+
+// listen for DOMContentLoaded event
+document.addEventListener('DOMContentLoaded', populateGroups);
