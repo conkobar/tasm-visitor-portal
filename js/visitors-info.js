@@ -1,20 +1,24 @@
 import { checkAuthState, getCurrentDate } from "./authFunctions";
+import { checkInput} from "./data_validators";
 
 // new visitors test info object
 let visitorsInfo = { date: getCurrentDate() };
 
 // function to update visitorsInfo object
 const updateVisitorsInfo = () => {
-  visitorsInfo.name = document.getElementById('name').value,
-  visitorsInfo.zip = parseInt(document.getElementById('zip').value),
-  visitorsInfo.kids = parseInt(document.getElementById('kid').value),
-  visitorsInfo.students = parseInt(document.getElementById('student').value),
-  visitorsInfo.adults = parseInt(document.getElementById('adult').value),
+  visitorsInfo.name = document.getElementById('name').value;
+  visitorsInfo.zip = parseInt(document.getElementById('zip').value);
+  visitorsInfo.kids = parseInt(document.getElementById('kid').value);
+  visitorsInfo.students = parseInt(document.getElementById('student').value);
+  visitorsInfo.adults = parseInt(document.getElementById('adult').value);
   visitorsInfo.seniors = parseInt(document.getElementById('senior').value);
 
-  // check null values
+  // check input values
   for (let key in visitorsInfo) {
-    if (Number.isNaN(visitorsInfo[key])) visitorsInfo[key] = 0;
+    // check input if it is a number
+    if (typeof visitorsInfo[key] === 'number') {
+      visitorsInfo[key] = checkInput(visitorsInfo[key]);
+    }
   }
 
   // check required fields
@@ -26,6 +30,7 @@ const updateVisitorsInfo = () => {
     window.location.href = './optional-info.html';
   } else {
     alert('Name and Zip Code are required fields.');
+    console.log(visitorsInfo);
   }
 
   // show new visitorsInfo object in console
