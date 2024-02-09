@@ -7,7 +7,11 @@ let groupInfo = { date: getCurrentDate() };
 
 // update groupInfo when user clicks next button
 const updateGroupInfo = () => {
-  groupInfo.groupName = document.getElementById('Group-2').textContent;
+  // grab values from "select" dropdown of field trip groups
+  const selectElement = document.getElementById("Group-2");
+
+  // populate data from form
+  groupInfo.groupName = selectElement.options[selectElement.selectedIndex].text;
   groupInfo.zip = parseInt(document.getElementById('Group-2').value);
   groupInfo.students = parseInt(document.getElementById('students').value);
   groupInfo.adults = parseInt(document.getElementById('adults').value);
@@ -35,13 +39,24 @@ const updateGroupInfo = () => {
   }
 
   // check required fields
-  if (groupInfo.name !== '') {
-    // store groupInfo object in localStorage
-    localStorage.setItem('groupInfo', JSON.stringify(groupInfo));
+  if (groupInfo.groupName !== "Select one...") {
+    // define properties of groupInfo object
+    let visitors = ['students', 'adults', 'boys', 'girls', 'firstGrade', 'secondGrade', 'thirdGrade', 'fourthGrade', 'fifthGrade', 'sixthGrade', 'seventhGrade', 'eighthGrade', 'ninthGrade', 'tenthGrade', 'eleventhGrade', 'twelfthGrade'];
 
-    // redirect to next page
-    window.location.href = './confirmation-page.html';
+    // calculate sum of groupInfo visitors
+    let sum = visitors.reduce((total, property) => total + groupInfo[property], 0);
 
+    if (sum > 0) {
+      console.log("The sum of the numbers is more than zero.");
+
+      // store groupInfo object in localStorage
+      localStorage.setItem('groupInfo', JSON.stringify(groupInfo));
+
+      // redirect to next page
+      window.location.href = './confirmation-page.html';
+    } else {
+      alert('Please specify the number of visitors.')
+    }
   } else {
     alert('Group Name is a required field.');
   }

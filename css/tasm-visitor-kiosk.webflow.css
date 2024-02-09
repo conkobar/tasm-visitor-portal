@@ -144,7 +144,9 @@
 .logo {
   width: 570px;
   object-fit: contain;
-  margin: 30px 80px 30px 100px;
+  margin: auto;
+  padding-bottom: 5%;
+  padding-top: 5%;
 }
 
 .image-3 {
@@ -1170,6 +1172,7 @@
   background-color: #3da447;
   font-family: Lato, sans-serif;
   font-size: 16px;
+  color: white;
 }
 
 .div-block-12 {
