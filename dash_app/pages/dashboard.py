@@ -96,11 +96,10 @@ layout = html.Div(
     Input('my-date-picker-range', 'start_date'),
     Input('my-date-picker-range', 'end_date'))
 def update_output(start_date, end_date):
-    data.start_date = start_date
-    data.end_date = end_date
-    data.filter_data()
+    vdff = data.filter_data(data.visitor_df, start_date, end_date)
+    gdff = data.filter_data(data.group_df, start_date, end_date)
 
-    visitor_count_string = f'{int(data.visitor_totals + data.group_totals)} total visitors in selected date range'
+    visitor_count_string = f'{data.count_visitors(vdff) + data.count_visitors(gdff)} total visitors in selected date range'
 
     string_prefix = 'You have selected: '
     if start_date is not None:
@@ -122,7 +121,6 @@ def update_output(start_date, end_date):
     Input('reset', 'n_clicks')
 )
 def reset_dates(n_clicks):
-    data.reset()
     return data.start_date, data.end_date
 
 @callback(
@@ -131,10 +129,8 @@ def reset_dates(n_clicks):
     Input('my-date-picker-range', 'end_date')
 )
 def update_visitor_line_chart(start_date, end_date):
-    # set start and end dates
-    data.start_date = start_date
-    data.end_date = end_date
-    data.filter_data()
+    vdff = data.filter_data(data.visitor_df, start_date, end_date)
+    gdff = data.filter_data(data.group_df, start_date, end_date)
 
     # show 14 day rolling average if date range allows
     y =  ['Non-School Visitors', 'School Group Visitors']
@@ -144,7 +140,7 @@ def update_visitor_line_chart(start_date, end_date):
 
     # create plot
     fig = px.line(
-        data.daily_total_visitor_count(window),
+        data.daily_total_visitor_count(vdff, gdff, window),
         x='date',
         y=y,
         line_shape='spline',
@@ -160,13 +156,11 @@ def update_visitor_line_chart(start_date, end_date):
     Input('my-date-picker-range', 'end_date')
 )
 def update_visitor_bar_chart(start_date, end_date):
-    # set start and end dates
-    data.start_date = start_date
-    data.end_date = end_date
-    data.filter_data()
+    vdff = data.filter_data(data.visitor_df, start_date, end_date)
+    gdff = data.filter_data(data.group_df, start_date, end_date)
 
     # create plot
-    df = data.visitor_demographics().rename({
+    df = data.visitor_demographics(vdff, gdff).rename({
         'adults': "Adults (18-64)",
         'students': "Students (5-17)",
         'kids': "Children (0-4)",
@@ -186,8 +180,15 @@ def update_visitor_bar_chart(start_date, end_date):
 @callback(
     Output("download-dataframe-csv", "data"),
     Input("btn_csv", "n_clicks"),
+    Input("my-date-picker-range", "start_date"),
+    Input('my-date-picker-range', 'end_date'),
     prevent_initial_call=True,
 )
-def func(n_clicks):
-    df = data.visitor_dff.merge(data.group_dff, how='outer').sort_values('date').reset_index(drop=True)
-    return dcc.send_data_frame(df.to_csv, "tasm_visitor_data(" + data.start_date + '_to_' + data.end_date + ").csv")
+def func(n_clicks, start_date, end_date):
+    if n_clicks:
+        vdff = data.filter_data(data.visitor_df, start_date, end_date)
+        gdff = data.filter_data(data.group_df, start_date, end_date)
+        
+        df = vdff.merge(gdff, how='outer').sort_values('date').reset_index(drop=True)
+
+        return dcc.send_data_frame(df.to_csv, "tasm_visitor_data(" + start_date + '_to_' + end_date + ").csv")

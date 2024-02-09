@@ -9,9 +9,15 @@ from google.cloud import firestore
 
 
 class DataHandler:
+    """
+    All methods for this class should take a dataframe(s) as an argument, and return a modified dataframe(s)
+    This will fix the issue of one page altering the dataframe of another
+    This means that each page needs to have its own copy of the filtered and unfiltered dataframes
+    """
+
     # get zip code data (so we don't have to rebuild the df every time we call zip_code_count())
-    # uszips = pd.read_csv('data/uszips.csv') # For local testing only
-    uszips = pd.read_csv('/dash_app/data/uszips.csv') # for use in deployment
+    uszips = pd.read_csv('data/uszips.csv') # For local testing only
+    # uszips = pd.read_csv('/dash_app/data/uszips.csv') # for use in deployment
 
     def __init__(self, start_date=None, end_date=None) -> None:
         """
@@ -52,11 +58,6 @@ class DataHandler:
         else:
             self._end_date = end_date
 
-        # Create date-filtered dataframe
-        self.visitor_dff = None
-        self.group_dff = None
-        self.filter_data()
-
         # Get stats from dff
         self._visitor_totals = self.visitor_totals
         self._group_totals = self.group_totals
@@ -76,10 +77,8 @@ class DataHandler:
         if data_list:
             if 'visitors' in doc.reference.path:
                 self.visitor_df = pd.DataFrame(data_list)
-                self.filter_data()
             elif 'groups' in doc.reference.path:
                 self.group_df = pd.DataFrame(data_list)
-                self.filter_data()
 
     # Firebase method
     def get_firestore_data(self, collection_ref):
@@ -133,7 +132,7 @@ class DataHandler:
     # visitor_totals getter
     @property
     def visitor_totals(self) -> int:
-        return self.visitor_dff[['adults', 'students', 'kids', 'seniors']].sum().sum()
+        return self.visitor_df[['adults', 'students', 'kids', 'seniors']].sum().sum()
 
     # visitor_totals setter
     @visitor_totals.setter
@@ -143,12 +142,32 @@ class DataHandler:
     # group_totals getter
     @property
     def group_totals(self) -> int:
-        return self.group_dff[['adults', 'students']].sum().sum()
+        return self.group_df[['adults', 'students']].sum().sum()
 
     # group_totals setter
     @group_totals.setter
     def group_totals(self, value):
         self._group_totals = value
+
+    def count_visitors(self, df) -> int:
+        """
+        Returns count of visitors in dataframe
+
+        Parameters
+        ----------
+        df : pd.DataFrame
+            The dataframe to count. Method checks if df is formatted as 'group' type, and assumes visitor type if not.
+
+        Returns
+        -------
+        int
+            Total number of visitors in dataframe
+        """
+        if 'groupName' in df.columns:
+            return int(df[['adults', 'students']].sum().sum())
+
+        else:
+            return int(df[['adults', 'students', 'kids', 'seniors']].sum().sum())
 
     def visitor_data(self) -> pd.DataFrame:
         """
@@ -180,9 +199,9 @@ class DataHandler:
         """
         return self.group_df
 
-    def filter_data(self) -> pd.DataFrame:
+    def filter_data(self, df, start_date, end_date) -> pd.DataFrame:
         """
-        Creates date-filtered dataframe
+        Returns date-filtered dataframe
 
         Parameters
         ----------
@@ -195,35 +214,40 @@ class DataHandler:
             Dataframe filtered by date
         """
         # filter df using mask
-        visitor_mask = (self.visitor_df['date'] >= self._start_date) & (self.visitor_df['date'] <= self._end_date)
-        self.visitor_dff = self.visitor_df.loc[visitor_mask]
-        group_mask = (self.group_df['date'] >= self._start_date) & (self.group_df['date'] <= self._end_date)
-        self.group_dff = self.group_df.loc[group_mask]
+        mask = (df['date'] >= start_date) & (df['date'] <= end_date)
+        dff = df.loc[mask]
 
-    def reset(self) -> None:
-        """
-        Resets date range to all
+        return dff
 
-        Parameters
-        ----------
-        None
+    # This method should no longer be needed
+    # def reset(self) -> None:
+    #     """
+    #     Resets date range to all
 
-        Returns
-        -------
-        None
-        """
-        self._start_date = min(self.visitor_df['date'].min(), self.group_df['date'].min())
-        self._end_date = max(self.visitor_df['date'].max(), self.group_df['date'].max())
-        self.visitor_dff = self.visitor_df
-        self.group_dff = self.group_df
+    #     Parameters
+    #     ----------
+    #     None
 
-    def zip_code_count(self) -> pd.DataFrame:
+    #     Returns
+    #     -------
+    #     None
+    #     """
+    #     self._start_date = min(self.visitor_df['date'].min(), self.group_df['date'].min())
+    #     self._end_date = max(self.visitor_df['date'].max(), self.group_df['date'].max())
+    #     self.visitor_dff = self.visitor_df
+    #     self.group_dff = self.group_df
+
+    def zip_code_count(self, vdf, gdf) -> pd.DataFrame:
         """
         Creates table of zip codes from filtered dataframe by count, and appends coordinates
 
         Parameters
         ----------
-        None
+        vdf : pd.DataFrame
+            A Pandas dataframe containing the visitor data
+
+        gdf : pd.DataFrame
+            A Pandas dataframe containing the group data
 
         Returns
         -------
@@ -232,8 +256,8 @@ class DataHandler:
             columns : ',zipCode,counts,lat,lgn'
         """
         # Get zip columns
-        visitor_zips = self.visitor_dff['zip']
-        group_zips = self.group_dff['zip']
+        visitor_zips = vdf['zip']
+        group_zips = gdf['zip']
 
         # Create a list of all zips
         all_zips = pd.concat([visitor_zips, group_zips], axis=0, ignore_index=True).to_frame()
@@ -256,31 +280,41 @@ class DataHandler:
         else:
             return pd.DataFrame(columns=['zip', 'lat', 'lng', 'counts'])
 
-    def visitor_demographics(self) -> pd.DataFrame:
+    def visitor_demographics(self, vdf, gdf) -> pd.DataFrame:
         """
         Creates a dataframe of visitors by age
 
         Parameters
         ----------
-        None
+        vdf : pd.DataFrame
+            A Pandas dataframe containing the visitor data
+
+        gdf : pd.DataFrame
+            A Pandas dataframe containing the group data
 
         Returns
         -------
         pd.DataFrame
             Breakdown of visitors by category
         """
-        df = self.visitor_dff[['adults', 'students', 'kids', 'seniors']].sum()
-        df['adults'] += self.group_dff['students'].sum()
-        df['students'] += self.group_dff['adults'].sum()
+        dff = vdf[['adults', 'students', 'kids', 'seniors']].sum()
+        dff['adults'] += gdf['students'].sum()
+        dff['students'] += gdf['adults'].sum()
 
-        return df
+        return dff
 
-    def daily_total_visitor_count(self, window=None) -> pd.DataFrame:
+    def daily_total_visitor_count(self, vdf, gdf, window=None) -> pd.DataFrame:
         """
         Creates table of total visitor count by day
 
         Parameters
         ----------
+        vdf : pd.DataFrame
+            A Pandas dataframe containing the visitor data
+
+        gdf : pd.DataFrame
+            A Pandas dataframe containing the group data
+
         window : int (Optional)
             Size of window for daily visitor rolling average
 
@@ -289,27 +323,28 @@ class DataHandler:
         pd.DataFrame
             df of total visitor count by day
         """
-        vdf = self.visitor_dff
-        gdf = self.group_dff
+        # create copies so as to not alter the original dataframes
+        vdf_copy = vdf.copy()
+        gdf_copy = gdf.copy()
 
         # sort by date
-        vdf = vdf.sort_values('date')
-        gdf = gdf.sort_values('date')
+        vdf_copy = vdf_copy.sort_values('date')
+        gdf_copy = gdf_copy.sort_values('date')
 
         # group visitors by date
-        vdf = vdf[['date', 'adults', 'kids', 'students', 'seniors']].groupby('date').sum()
-        gdf = gdf[['date', 'adults', 'students']].groupby('date').sum()
+        vdf_copy = vdf_copy[['date', 'adults', 'kids', 'students', 'seniors']].groupby('date').sum()
+        gdf_copy = gdf_copy[['date', 'adults', 'students']].groupby('date').sum()
 
         # sum all visitors by date
-        vdf = vdf[['adults', 'kids', 'students', 'seniors']].sum(axis=1).reset_index(name='Non-School Visitors')
-        gdf = gdf[['adults', 'students']].sum(axis=1).reset_index(name='School Group Visitors')
+        vdf_copy = vdf_copy[['adults', 'kids', 'students', 'seniors']].sum(axis=1).reset_index(name='Non-School Visitors')
+        gdf_copy = gdf_copy[['adults', 'students']].sum(axis=1).reset_index(name='School Group Visitors')
 
         # Add column for rolling avg
         if window is not None:
-            vdf['Visitor Avg (2wks)'] = vdf['Non-School Visitors'].rolling(window, center=True).mean()
-            gdf['Group Avg (2wks)'] = gdf['School Group Visitors'].rolling(window, center=True).mean()
+            vdf_copy['Visitor Avg (2wks)'] = vdf_copy['Non-School Visitors'].rolling(window, center=True).mean()
+            gdf_copy['Group Avg (2wks)'] = gdf_copy['School Group Visitors'].rolling(window, center=True).mean()
 
-        return vdf.merge(gdf, how='outer').fillna(0)
+        return vdf_copy.merge(gdf_copy, how='outer').fillna(0)
 
     def date_range(self) -> int:
         """
