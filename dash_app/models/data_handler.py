@@ -103,6 +103,11 @@ class DataHandler:
         self.visitor_doc_watch.unsubscribe()
         self.group_doc_watch.unsubscribe()
 
+    # Firebase method
+    def send_to_firestore(self, data, collection_ref):
+        # Add a new document to the collection
+        collection_ref.add(data)
+
     # Start date getter
     @property
     def start_date(self) -> str:

@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 import dash
-from dash import Dash, html, dcc
+from dash import Dash, html
 
 
 app = Dash(__name__, use_pages=True)
