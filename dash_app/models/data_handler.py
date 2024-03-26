@@ -104,9 +104,21 @@ class DataHandler:
         self.group_doc_watch.unsubscribe()
 
     # Firebase method
-    def send_to_firestore(self, data, collection_ref):
+    def send_to_firestore(self, data, collection_name):
         # Add a new document to the collection
-        collection_ref.add(data)
+        if collection_name == 'visitors':
+            collection_ref = self.visitor_collection_ref
+        elif collection_name == 'groups':
+            collection_ref = self.group_collection_ref
+        else:
+            return 'Invalid collection name'
+
+        try:
+            collection_ref.add(data, timeout=10)
+            return 'Form submitted successfully!'
+
+        except Exception as e:
+            return f'Unable to submit form. Error: {e}'
 
     # Start date getter
     @property

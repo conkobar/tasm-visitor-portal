@@ -7,8 +7,7 @@ from datetime import date
 from models import data
 
 
-# register page
-dash.register_page(__name__)
+dash.register_page(__name__, external_stylesheets=[dbc.themes.CERULEAN])
 
 states = [ 'AK', 'AL', 'AR', 'AZ', 'CA', 'CO', 'CT', 'DC', 'DE', 'FL', 'GA',
            'HI', 'IA', 'ID', 'IL', 'IN', 'KS', 'KY', 'LA', 'MA', 'MD', 'ME',
@@ -59,7 +58,8 @@ layout = dbc.Container(
                             required=True
                         )
                     ],
-                    style={'margin-bottom': '10px'}
+                    style={'margin-bottom': '10px'},
+                    width=4
                 )
             ],
             style={'margin-bottom': '20px'}
@@ -82,7 +82,8 @@ layout = dbc.Container(
                             value='OK',
                             placeholder='State'
                         )
-                    ]
+                    ],
+                    width=4
                 ),
                 dbc.Col(
                     [
@@ -106,7 +107,7 @@ layout = dbc.Container(
                             required=True
                         )
                     ],
-                    width=4
+                    width=3
                 )
             ],
             style={'margin-bottom': '20px'}
@@ -141,7 +142,8 @@ layout = dbc.Container(
                             required=True
                         )
                     ],
-                    style={'margin-bottom': '10px'}
+                    style={'margin-bottom': '10px'},
+                    width=2
                 ),
                 dbc.Col(
                     [
@@ -162,7 +164,8 @@ layout = dbc.Container(
                             inputMode='numeric',
                             debounce=True
                         )
-                    ]
+                    ],
+                    width=2
                 )
             ],
             style={'margin-bottom': '20px'}
@@ -185,7 +188,8 @@ layout = dbc.Container(
                                 for grade in range(1, 5)
                             ]
                         )
-                    ]
+                    ],
+                    width=2
                 ),
                 dbc.Col(
                     [
@@ -203,7 +207,8 @@ layout = dbc.Container(
                                 for grade in range(5, 9)
                             ]
                         )
-                    ]
+                    ],
+                    width=2
                 ),
                 dbc.Col(
                     [
@@ -221,7 +226,8 @@ layout = dbc.Container(
                                 for grade in range(9, 13)
                             ],
                         )
-                    ]
+                    ],
+                    width=2
                 )
             ],
             style={'margin-bottom': '20px'}
@@ -239,8 +245,7 @@ layout = dbc.Container(
             style={'margin-bottom': '20px'}
         )
     ],
-    fluid=True,
-    style={'padding': '40px'}
+    fluid=True
 )
 
 # Callback to submit form data to firestore database
@@ -309,12 +314,24 @@ def submit_form(n_clicks, date, school_name, leader_name, school_address, school
             'adults': adults,
             'students': students,
             'boys': boys,
-            'girls': girls
+            'girls': girls,
+            'first_grade': grades[0],
+            'second_grade': grades[1],
+            'third_grade': grades[2],
+            'fourth_grade': grades[3],
+            'fifth_grade': grades[4],
+            'sixth_grade': grades[5],
+            'seventh_grade': grades[6],
+            'eighth_grade': grades[7],
+            'ninth_grade': grades[8],
+            'tenth_grade': grades[9],
+            'eleventh_grade': grades[10],
+            'twelfth_grade': grades[11]
         }
 
         # send form data to firestore database
-        data.add_group_form(form_data, 'groups')
+        message = data.send_to_firestore(form_data, 'groups')
 
-        return 0, 'Your form has been submitted!'
+        return 0, message
 
     return 0, None
